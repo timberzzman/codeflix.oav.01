@@ -8,7 +8,6 @@ function parseINI(file) {
     let subjectregxp = /\[(.*)\]/gm
     let result = `{\n`
     let lines = file.match(lineregxp).filter(element => !element.match(';'))
-    //lines = lines.filter(element => !element.match(';'))
     for (let i = 0; i < lines.length; i++) {
         let temp = lines[i]
         let j = i + 1
@@ -26,7 +25,11 @@ function parseINI(file) {
             }
             result += `\t"${subject[1]}" : {\n`
         }
+        if (i == lines.length - 1 && !result.endsWith('}')) {
+            result += '\t}\n'
+        }
     }
+    result += '}'
     return result
 }
 
