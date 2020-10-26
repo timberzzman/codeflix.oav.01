@@ -5,14 +5,26 @@ const argumentregxp = /([^=]+)/gm;
 const lineregxp = /(^[^\n\r]+$)/gm;
 
 function parseINI(file) {
+    let subjectregxp = /\[(.*)\]/gm
     let result = `{\n`
-    let lines = file.match(lineregxp)
+    let lines = file.match(lineregxp).filter(element => !element.match(';'))
+    //lines = lines.filter(element => !element.match(';'))
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].match(';')) {
-            continue
+        let temp = lines[i]
+        let j = i + 1
+        let subject = subjectregxp.exec(temp)
+        if (subject == null) {
+            let values = temp.match(argumentregxp)
+            result += `\t\t"${values[0].trim()}" : ${ values.length > 1 ? `"${values[1].replace(/["]/g, '').trim()}"` : `""`}`
+            if (!lines[j].match(/\[(.*)\]/gm)) {
+                result += ',\n'
+            }
         }
-        else if() {
-
+        else {
+            if (i != 0) {
+                result += `\n\t},\n`
+            }
+            result += `\t"${subject[1]}" : {\n`
         }
     }
     return result
